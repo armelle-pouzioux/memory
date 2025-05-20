@@ -1,0 +1,36 @@
+body{
+  justify-content: center;
+}
+
+h1{
+  font-family: "Jacquard 12", system-ui;
+}
+
+.App{
+  justify-content: center;
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 100px);
+  gap: 10px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.level-select {
+  text-align: center;
+  margin-top: 50px;
+}
+
+.level-buttons{
+  display: flex;
+  flex-flow: column nowrap;
+}
+
+.level-select button {
+  margin: 10px;
+}
