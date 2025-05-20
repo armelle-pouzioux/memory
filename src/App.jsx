@@ -6,17 +6,61 @@ import Button from './components/Button';
 import LevelSelect from './components/LevelSelect';
 
 
+function getCardsForLevel(level) {
+  let selectedCards;
+
+  switch (level) {
+    case 'easy':
+      selectedCards = cardsData.slice(0, 3);
+      break;
+    case 'medium':
+      selectedCards = cardsData.slice(0, 6); 
+      break;
+    case 'hard':
+      selectedCards = cardsData.slice(0, 8); 
+      break;
+    default:
+      selectedCards = cardsData.slice(0, 8); 
+  }
+
+  const duplicatedCards = [...selectedCards, ...selectedCards].map((card, index) => ({
+    ...card,
+    uuid: index + '-' + card.name,
+    isFlipped: false,
+    isMatched: false,
+  }));
+
+  return duplicatedCards.sort(() => Math.random() - 0.5);
+}
 
 function App() {
   const [cards, setCards] = useState([]);
   const [flippedCards, setFlippedCards] = useState([]);
   const [isChecking, setIsChecking] = useState(false);
   const [level, setLevel] = useState(null);
+  const [time, setTime] = useState(0);
+  const [isTimerRunning, setIsTimerRunning] = useState(false);
 
 
   useEffect(() => {
-    resetGame();
-  }, []);
+    if (level){
+      resetGame();
+      setTime(0);
+      setIsTimerRunning(true);
+    }
+  }, [level]);
+
+  useEffect(() => {
+  let timer;
+  if (isTimerRunning) {
+    timer = setInterval(() => {
+      setTime((prevTime) => prevTime + 1);
+    }, 1000);
+  }
+
+  return () => clearInterval(timer);
+}, [isTimerRunning]);
+
 
   const handleCardClick = (clickedCard) => {
     if (isChecking || clickedCard.isFlipped || clickedCard.isMatched) return;
@@ -66,7 +110,7 @@ const resetGame = () => {
     isMatched: false,
   }));
 
-  const shuffledCards = duplicatedCards.sort(() => Math.random() - 0.5);
+  const shuffledCards = getCardsForLevel(level);
   setCards(shuffledCards);
   setFlippedCards([]);
   setIsChecking(false);
@@ -76,20 +120,20 @@ if (!level) {
     return <LevelSelect onSelect={setLevel} />;
   }
 
-
-
   return (
   <div className="App">
-    <h1>Memory Game</h1>
+    <h1 className="clickable-title" onClick={() => setLevel(null)}>
+  Memory Game</h1>
 
     {cards.length > 0 && cards.every(card => card.isMatched) && (
-      <div className="victory-message">
+
+       <div className="victory-message">
         🎉 Bravo, tu as gagné ! 🎉
         <Button label="Rejouer" onClick={resetGame} />
       </div>
     )}
 
-    <div className="grid">
+    <div className={`grid grid-${level}`}>
       {cards.map((card) => (
         <Card
           key={card.uuid}

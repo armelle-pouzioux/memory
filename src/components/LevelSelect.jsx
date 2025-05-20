@@ -6,9 +6,9 @@ function LevelSelect({onSelect}){
         <div className="level-select">
             <h1>Memory Game</h1>
             <div className="level-buttons">
-                <Button label="Niveau 1" onClick={()=> onSelect(1)}/>
-                <Button label="Niveau 2" onClick={()=> onSelect(2)}/>
-                <Button label="Niveau 3" onClick={()=> onSelect(3)}/>
+                <Button label="easy" onClick={()=> onSelect("easy")}/>
+                <Button label="medium" onClick={()=> onSelect("medium")}/>
+                <Button label="hard" onClick={()=> onSelect("hard")}/>
             </div>
         </div>
     );

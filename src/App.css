@@ -4,6 +4,7 @@ body{
 
 h1{
   font-family: "Jacquard 12", system-ui;
+  cursor: pointer;
 }
 
 .App{
@@ -15,10 +16,21 @@ h1{
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(4, 100px);
   gap: 10px;
   justify-content: center;
   margin-top: 20px;
+}
+
+.grid-easy {
+  grid-template-columns: repeat(3, 100px);
+}
+
+.grid-medium {
+  grid-template-columns: repeat(4, 100px);
+}
+
+.grid-hard {
+  grid-template-columns: repeat(4, 100px);
 }
 
 .level-select {
@@ -33,4 +45,9 @@ h1{
 
 .level-select button {
   margin: 10px;
+}
+
+.victory-message{
+  display: flex;
+  flex-flow: column nowrap;
 }
