@@ -1,151 +1,47 @@
-import { useState, useEffect } from 'react'
-import Card from './components/Card';
-import cardsData from './data/cards';
-import './App.css';
-import Button from './components/Button';
-import LevelSelect from './components/LevelSelect';
+"use client"
 
-
-function getCardsForLevel(level) {
-  let selectedCards;
-
-  switch (level) {
-    case 'easy':
-      selectedCards = cardsData.slice(0, 3);
-      break;
-    case 'medium':
-      selectedCards = cardsData.slice(0, 6); 
-      break;
-    case 'hard':
-      selectedCards = cardsData.slice(0, 8); 
-      break;
-    default:
-      selectedCards = cardsData.slice(0, 8); 
-  }
-
-  const duplicatedCards = [...selectedCards, ...selectedCards].map((card, index) => ({
-    ...card,
-    uuid: index + '-' + card.name,
-    isFlipped: false,
-    isMatched: false,
-  }));
-
-  return duplicatedCards.sort(() => Math.random() - 0.5);
-}
+import { useState } from "react"
+import MemoryGame from "./components/MemoryGame"
+import LevelSelect from "./components/LevelSelect"
+import "./App.css"
 
 function App() {
-  const [cards, setCards] = useState([]);
-  const [flippedCards, setFlippedCards] = useState([]);
-  const [isChecking, setIsChecking] = useState(false);
-  const [level, setLevel] = useState(null);
-  const [time, setTime] = useState(0);
-  const [isTimerRunning, setIsTimerRunning] = useState(false);
+  const [level, setLevel] = useState(null)
+  const [bestTimes, setBestTimes] = useState({
+    easy: Number.POSITIVE_INFINITY,
+    medium: Number.POSITIVE_INFINITY,
+    hard: Number.POSITIVE_INFINITY,
+  })
 
-
-  useEffect(() => {
-    if (level){
-      resetGame();
-      setTime(0);
-      setIsTimerRunning(true);
-    }
-  }, [level]);
-
-  useEffect(() => {
-  let timer;
-  if (isTimerRunning) {
-    timer = setInterval(() => {
-      setTime((prevTime) => prevTime + 1);
-    }, 1000);
+  const handleGameComplete = (gameLevel, time) => {
+    setBestTimes((prev) => ({
+      ...prev,
+      [gameLevel]: time < prev[gameLevel] ? time : prev[gameLevel],
+    }))
   }
 
-  return () => clearInterval(timer);
-}, [isTimerRunning]);
-
-
-  const handleCardClick = (clickedCard) => {
-    if (isChecking || clickedCard.isFlipped || clickedCard.isMatched) return;
-
-    const newFlipped = [...flippedCards, clickedCard];
-
-    setCards((prevCards) =>
-    prevCards.map((card) =>
-      card.uuid === clickedCard.uuid ? { ...card, isFlipped: true } : card
-     )
-    );
-
-    setFlippedCards(newFlipped);
-
-    if (newFlipped.length === 2) {
-    setIsChecking(true);
-
-    const [first, second] = newFlipped;
-
-    setTimeout(()=>{
-      if (first.name === second.name) {
-        setCards((prevCards) =>
-          prevCards.map((card) =>
-            card.name === first.name ? { ...card, isMatched: true } : card
-          )
-        );
-      } else {
-        setCards((prevCards) =>
-          prevCards.map((card) =>
-            card.uuid === first.uuid || card.uuid === second.uuid
-              ? { ...card, isFlipped: false }
-              : card
-          )
-        );
-      }
-      setFlippedCards([]);
-      setIsChecking(false);
-    }, 1000);
-  }
-};
-
-const resetGame = () => {
-  const duplicatedCards = [...cardsData, ...cardsData].map((card, index) => ({
-    ...card,
-    uuid: index + '-' + card.name,
-    isFlipped: false,
-    isMatched: false,
-  }));
-
-  const shuffledCards = getCardsForLevel(level);
-  setCards(shuffledCards);
-  setFlippedCards([]);
-  setIsChecking(false);
-};
-
-if (!level) {
-    return <LevelSelect onSelect={setLevel} />;
+  const handleRestart = () => {
+    setLevel(null)
   }
 
   return (
-  <div className="App">
-    <h1 className="clickable-title" onClick={() => setLevel(null)}>
-  Memory Game</h1>
+    <div className="app">
+      <h1 className="app-title" onClick={handleRestart}>
+        Memory Game
+      </h1>
 
-    {cards.length > 0 && cards.every(card => card.isMatched) && (
-
-       <div className="victory-message">
-        🎉 Bravo, tu as gagné ! 🎉
-        <Button label="Rejouer" onClick={resetGame} />
-      </div>
-    )}
-
-    <div className={`grid grid-${level}`}>
-      {cards.map((card) => (
-        <Card
-          key={card.uuid}
-          image={card.image}
-          isFlipped={card.isFlipped}
-          onClick={() => handleCardClick(card)}
-          isMatched={card.isMatched}
+      {level ? (
+        <MemoryGame
+          level={level}
+          onRestart={handleRestart}
+          onComplete={(time) => handleGameComplete(level, time)}
+          bestTime={bestTimes[level] === Number.POSITIVE_INFINITY ? null : bestTimes[level]}
         />
-      ))}
+      ) : (
+        <LevelSelect onSelect={setLevel} bestTimes={bestTimes} />
+      )}
     </div>
-  </div>
-  );
+  )
 }
 
-export default App;
+export default App

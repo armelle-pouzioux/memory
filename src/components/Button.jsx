@@ -1,12 +1,11 @@
-import React from "react";
+"use client"
 
-
-function Button({ label, onClick, className = "" }) {
+function Button({ children, onClick, className = "" }) {
   return (
-    <button className={`custom-button ${className}`} onClick={onClick}>
-      {label}
+    <button className={`button ${className}`} onClick={onClick}>
+      {children}
     </button>
-  );
+  )
 }
 
-export default Button;
+export default Button

@@ -7,7 +7,7 @@ import mrbebe from '../assets/mrbebe.png'
 import sacados from '../assets/sacados.png'
 import tour from '../assets/tour.png'
 
-const cards =[
+export const cardsData =[
     { id:1, name: 'chapeau', image: chapeau},
     { id:2, name: 'clio', image: clio},
     { id:3, name: 'clope', image: clope},
@@ -18,4 +18,3 @@ const cards =[
     { id:8, name: 'tour', image: tour},
 ];
 
-export default cards;
