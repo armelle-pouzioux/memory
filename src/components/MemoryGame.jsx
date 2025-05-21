@@ -18,7 +18,7 @@ function MemoryGame({ level, onRestart, onComplete, bestTime }) {
     resetGame()
     setTime(0)
     setMoves(0)
-    setIsTimerRunning(true)
+    setIsTimerRunning(false)
     setGameComplete(false)
   }, [level])
 
@@ -76,10 +76,38 @@ function MemoryGame({ level, onRestart, onComplete, bestTime }) {
   const handleCardClick = (clickedCard) => {
     if (isChecking || clickedCard.isFlipped || clickedCard.isMatched || gameComplete) return
 
+    if (!isTimerRunning && time === 0) {
+        setIsTimerRunning(true)
+    }
+
+    if (flippedCards.length === 2){
+        const [first, second] = flippedCards
+
+        setCards((prevCards)=>
+            prevCards.map((card)=>
+                card.uuid === first.uuid || card.uuid === second.uuid
+                ?{...card, isFlipped:false}
+                : card
+            )
+        )
+
+        setFlippedCards([clickedCard])
+
+        setCards((prevCards) =>
+            prevCards.map((card)=>
+             card.uuid === clickedCard.uuid ? {...card, isFlipped: true} : card
+            )
+        )
+        
+        return
+    }
+
     const newFlipped = [...flippedCards, clickedCard]
 
     setCards((prevCards) =>
-      prevCards.map((card) => (card.uuid === clickedCard.uuid ? { ...card, isFlipped: true } : card)),
+      prevCards.map((card) => 
+        card.uuid === clickedCard.uuid ? { ...card, isFlipped: true } : card
+        )
     )
 
     setFlippedCards(newFlipped)
@@ -93,18 +121,14 @@ function MemoryGame({ level, onRestart, onComplete, bestTime }) {
       setTimeout(() => {
         if (first.name === second.name) {
           setCards((prevCards) =>
-            prevCards.map((card) => (card.name === first.name ? { ...card, isMatched: true } : card)),
-          )
-        } else {
-          setCards((prevCards) =>
             prevCards.map((card) =>
-              card.uuid === first.uuid || card.uuid === second.uuid ? { ...card, isFlipped: false } : card,
-            ),
+                card.name === first.name ? { ...card, isMatched: true } : card
+            )
           )
+            setFlippedCards([])
         }
-        setFlippedCards([])
         setIsChecking(false)
-      }, 1000)
+      }, 500)
     }
   }
 
@@ -115,7 +139,7 @@ function MemoryGame({ level, onRestart, onComplete, bestTime }) {
     setIsChecking(false)
     setTime(0)
     setMoves(0)
-    setIsTimerRunning(true)
+    setIsTimerRunning(false)
     setGameComplete(false)
   }
 
