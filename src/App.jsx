@@ -1,5 +1,3 @@
-"use client"
-
 import { useState } from "react"
 import MemoryGame from "./components/MemoryGame"
 import LevelSelect from "./components/LevelSelect"

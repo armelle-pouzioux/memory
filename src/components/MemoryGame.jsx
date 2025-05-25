@@ -160,7 +160,7 @@ function MemoryGame({ level, onRestart, onComplete, bestTime }) {
 
         <div className="game-controls">
           <Button onClick={resetGame}>Restart</Button>
-          <Button onClick={onRestart}>Change Level</Button>
+          <Button onClick={onRestart}>Levels</Button>
         </div>
       </div>
 

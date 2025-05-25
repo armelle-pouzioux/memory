@@ -1,4 +1,4 @@
-"use client"
+import '../Button.css';
 
 function Button({ children, onClick, className = "" }) {
   return (

@@ -1,5 +1,3 @@
-"use client"
-
 import Button from "./Button"
 import { formatTime } from "../utils/helpers"
 
