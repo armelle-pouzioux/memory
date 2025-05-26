@@ -13,6 +13,8 @@ function MemoryGame({ level, onRestart, onComplete, bestTime }) {
   const [isTimerRunning, setIsTimerRunning] = useState(false)
   const [moves, setMoves] = useState(0)
   const [gameComplete, setGameComplete] = useState(false)
+  const [isSpeedrunMode, setIsSpeedrunMode] = useState(false);
+
 
   useEffect(() => {
     resetGame()
@@ -74,63 +76,71 @@ function MemoryGame({ level, onRestart, onComplete, bestTime }) {
   }
 
   const handleCardClick = (clickedCard) => {
-    if (isChecking || clickedCard.isFlipped || clickedCard.isMatched || gameComplete) return
+  if (isChecking || clickedCard.isFlipped || clickedCard.isMatched || gameComplete) return;
 
-    if (!isTimerRunning && time === 0) {
-        setIsTimerRunning(true)
-    }
+  if (!isTimerRunning && time === 0) {
+    setIsTimerRunning(true);
+  }
 
-    if (flippedCards.length === 2){
-        const [first, second] = flippedCards
+  const newFlipped = [...flippedCards, clickedCard];
 
-        setCards((prevCards)=>
-            prevCards.map((card)=>
-                card.uuid === first.uuid || card.uuid === second.uuid
-                ?{...card, isFlipped:false}
-                : card
-            )
-        )
-
-        setFlippedCards([clickedCard])
-
-        setCards((prevCards) =>
-            prevCards.map((card)=>
-             card.uuid === clickedCard.uuid ? {...card, isFlipped: true} : card
-            )
-        )
-        
-        return
-    }
-
-    const newFlipped = [...flippedCards, clickedCard]
-
-    setCards((prevCards) =>
-      prevCards.map((card) => 
-        card.uuid === clickedCard.uuid ? { ...card, isFlipped: true } : card
-        )
+  setCards((prevCards) =>
+    prevCards.map((card) =>
+      card.uuid === clickedCard.uuid ? { ...card, isFlipped: true } : card
     )
+  );
 
-    setFlippedCards(newFlipped)
+  setFlippedCards(newFlipped);
 
-    if (newFlipped.length === 2) {
-      setIsChecking(true)
-      setMoves((prevMoves) => prevMoves + 1)
+  if (newFlipped.length === 2) {
+    setIsChecking(true);
+    setMoves((prevMoves) => prevMoves + 1);
 
-      const [first, second] = newFlipped
+    const [first, second] = newFlipped;
 
+    if (first.name === second.name) {
       setTimeout(() => {
-        if (first.name === second.name) {
+        setCards((prevCards) =>
+          prevCards.map((card) =>
+            card.name === first.name ? { ...card, isMatched: true } : card
+          )
+        );
+        setFlippedCards([]);
+        setIsChecking(false);
+      }, 500);
+    } else {
+      if (isSpeedrunMode) {
+        setIsChecking(false);
+      } else {
+        setTimeout(() => {
           setCards((prevCards) =>
             prevCards.map((card) =>
-                card.name === first.name ? { ...card, isMatched: true } : card
+              card.uuid === first.uuid || card.uuid === second.uuid
+                ? { ...card, isFlipped: false }
+                : card
             )
-          )
-            setFlippedCards([])
-        }
-        setIsChecking(false)
-      }, 500)
+          );
+          setFlippedCards([]);
+          setIsChecking(false);
+        }, 700);
+      }
     }
   }
+
+  if (isSpeedrunMode && flippedCards.length === 2) {
+    const [first, second] = flippedCards;
+
+    setCards((prevCards) =>
+      prevCards.map((card) =>
+        card.uuid === first.uuid || card.uuid === second.uuid
+          ? { ...card, isFlipped: false }
+          : card
+      )
+    );
+
+    setFlippedCards([clickedCard]);
+  }
+};
 
   const resetGame = () => {
     const shuffledCards = getCardsForLevel(level)
@@ -161,6 +171,18 @@ function MemoryGame({ level, onRestart, onComplete, bestTime }) {
         <div className="game-controls">
           <Button onClick={resetGame}>Restart</Button>
           <Button onClick={onRestart}>Levels</Button>
+          <div className="toggle-wrapper">
+            <div className="toggle normal">
+              <input
+              id="speedrun-toggle"
+              type="checkbox"
+              checked={isSpeedrunMode}
+              onChange={() => setIsSpeedrunMode(prev => !prev)}
+            />
+            <label className="toggle-item" htmlFor="speedrun-toggle" />
+            </div>
+            <span className="name">{isSpeedrunMode ? 'Speedrun' : 'Normal'}</span>
+          </div>
         </div>
       </div>
 

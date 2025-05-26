@@ -47,7 +47,7 @@ body{
 .stat-label {
   font-size: 0.875rem;
   font-weight: 500;
-  color: #6b7280;
+  color: var(--color-primary);
 }
 
 .stat-value {
@@ -67,7 +67,7 @@ body{
   margin-bottom: 1rem;
   font-size: 0.875rem;
   font-weight: 500;
-  color: #7e22ce;
+  color: var(--color-time);
 }
 
 .victory-message {
