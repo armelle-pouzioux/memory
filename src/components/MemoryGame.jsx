@@ -13,7 +13,9 @@ function MemoryGame({ level, onRestart, onComplete, bestTime }) {
   const [isTimerRunning, setIsTimerRunning] = useState(false)
   const [moves, setMoves] = useState(0)
   const [gameComplete, setGameComplete] = useState(false)
-  const [isSpeedrunMode, setIsSpeedrunMode] = useState(false);
+  const [isSpeedrunMode, setIsSpeedrunMode] = useState(false)
+  const [audio] = useState(new Audio("/music/full.wav"))
+  const [isMusicStarted, setIsMusicStarted] = useState(false);
 
 
   useEffect(() => {
@@ -44,6 +46,9 @@ function MemoryGame({ level, onRestart, onComplete, bestTime }) {
         setIsTimerRunning(false)
         setGameComplete(true)
         onComplete(time)
+        audio.pause()
+        audio.currentTime = 0
+        setIsMusicStarted(false)
       }
     }
   }, [cards, isTimerRunning, time, onComplete])
@@ -79,7 +84,15 @@ function MemoryGame({ level, onRestart, onComplete, bestTime }) {
   if (isChecking || clickedCard.isFlipped || clickedCard.isMatched || gameComplete) return;
 
   if (!isTimerRunning && time === 0) {
-    setIsTimerRunning(true);
+    setIsTimerRunning(true)
+    
+    if (!isMusicStarted) {
+    audio.loop = true         
+    audio.volume = 0.3        
+    audio.currentTime = 15
+    audio.play()
+    setIsMusicStarted(true)
+  };
   }
 
   const newFlipped = [...flippedCards, clickedCard];
@@ -151,6 +164,11 @@ function MemoryGame({ level, onRestart, onComplete, bestTime }) {
     setMoves(0)
     setIsTimerRunning(false)
     setGameComplete(false)
+    if (isMusicStarted) {
+      audio.pause()
+      audio.currentTime = 0
+      setIsMusicStarted(false)
+    }
   }
 
   return (
