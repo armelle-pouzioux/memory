@@ -14,7 +14,7 @@ Ce dépôt contient une application React construite avec Vite, offrant un jeu d
    git clone https://github.com/armelle-pouzioux/memory-docker.git
    cd memory-docker
 
-2. Lancer le serveur
+2. Lancer le containeur
 
    npm run dev
 
